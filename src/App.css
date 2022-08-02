@@ -1,0 +1,177 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+th,
+td {
+  text-align: left;
+}
+
+th,
+td {
+  padding: 0 2rem;
+  border-left: 1px solid #666;
+}
+
+thead th {
+  background: #555;
+  color: white;
+}
+
+tbody td {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.totals td {
+  border-top: 1px solid white;
+  font-weight: 700;
+}
+
+.dropzone {
+  margin: 2rem;
+  padding: 0 1rem;
+  border: 5px dotted #ccc;
+  min-width: 80vw;
+  cursor: pointer;
+}
+
+.dropzone:hover {
+  background: #444;
+}
+
+table {
+  border-collapse: collapse;
+  margin-bottom: 4rem;
+  min-width: calc(100% - 40px);
+  margin: 0 auto;
+}
+
+table tr {
+  background: #eee;
+  color: #666;
+}
+
+table tr:nth-child(even) {
+  background: #ddd;
+  color: #666;
+}
+
+.secondary {
+  font-size: 0.75rem;
+  text-align: left;
+}
+
+.secondary p {
+  margin: 0.2rem 0;
+}
+
+.filenames {
+  font-size: 1rem;
+}
+
+a,
+a:link,
+:visited {
+  color: #61dafb;
+}
+
+:visited {
+  color: #1d9cbf;
+}
+
+.charts {
+  display: grid;
+  grid-template-columns: 50% 50%;
+}
+
+.journey-from-to {
+  display: flex;
+  align-items: center;
+}
+
+summary {
+  margin-bottom: 45.550px;
+  cursor: pointer;
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+h3 {
+  margin: 0;
+}
+
+.chart {
+  margin-bottom: 1rem;
+}
+
+.config label {
+  display: flex;
+  align-items: stretch;
+  margin-bottom: 1rem;
+}
+
+.config label input {
+  margin-left: 1ex;
+}
+
+.popover-button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+}
+.popover-button:hover {
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 3px;
+}
+.popover-button span {
+  display: block;
+}
+
+@media screen and (max-width: 1000px) {
+  .charts {
+    grid-template-columns: 100%;
+    gap: 25px;
+  }
+  .chart {
+    width: calc(100% - 40px);
+    margin: 0 auto;
+  }
+}
