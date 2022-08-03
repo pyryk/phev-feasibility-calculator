@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/static/css/main.dd193fa6.css",
-    "main.js": "/static/js/main.587b2e49.js",
-    "static/js/787.e5333318.chunk.js": "/static/js/787.e5333318.chunk.js",
-    "index.html": "/index.html",
-    "main.dd193fa6.css.map": "/static/css/main.dd193fa6.css.map",
-    "main.587b2e49.js.map": "/static/js/main.587b2e49.js.map",
-    "787.e5333318.chunk.js.map": "/static/js/787.e5333318.chunk.js.map"
+    "main.css": "/phev-feasibility-calculator/static/css/main.dd193fa6.css",
+    "main.js": "/phev-feasibility-calculator/static/js/main.648c7e52.js",
+    "static/js/787.e5333318.chunk.js": "/phev-feasibility-calculator/static/js/787.e5333318.chunk.js",
+    "index.html": "/phev-feasibility-calculator/index.html",
+    "main.dd193fa6.css.map": "/phev-feasibility-calculator/static/css/main.dd193fa6.css.map",
+    "main.648c7e52.js.map": "/phev-feasibility-calculator/static/js/main.648c7e52.js.map",
+    "787.e5333318.chunk.js.map": "/phev-feasibility-calculator/static/js/787.e5333318.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.dd193fa6.css",
-    "static/js/main.587b2e49.js"
+    "static/js/main.648c7e52.js"
   ]
 }
