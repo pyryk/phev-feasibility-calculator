@@ -62,8 +62,11 @@ const defaultChargingConfig: ChargingConfig = {
   "Kärkkäinen Lahtis": 60,
   "Teboil Huttula": 22,
   "ABC Heinola": 150,
+  "Iso Omena": 100,
   Motonet: 22,
   "Ravintola Siilinpesä": 22, // Siilitien Metroasema - Liityntäpysäköinti
+  "Prisma Kirkkonummi": 100,
+  "Verkkokauppa.com": 22,
 };
 
 function ControlledNumberInput({
