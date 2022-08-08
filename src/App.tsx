@@ -822,7 +822,7 @@ function ConsumptionResults({
   const percentageElectric =
     electricDistance / (electricDistance + petrolDistance);
   return (
-    <div>
+    <div className="app-container">
       <h2>Yhteenveto</h2>
       <table>
         <thead>
@@ -877,51 +877,55 @@ function ConsumptionResults({
         <JourneyLengthChart journeys={journeys} />
       </div>
       <h2>Matkat</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Matka</th>
-            <th>Sähköllä</th>
-            <th>Bensiinillä</th>
-            <th>Tiedot</th>
-          </tr>
-        </thead>
-        <tbody>
-          {result.entries.map((entry, i) =>
-            entry.type === "journey" ? (
-              <Journey
-                key={i}
-                chargingConfig={chargingConfig}
-                onChargingConfigChange={onChargingConfigChange}
-                journey={entry.journey}
-                from={
-                  entry.journey.from
-                    ? findParkingBefore(i, result.entries)
-                    : undefined
-                }
-                to={
-                  entry.journey.to
-                    ? findParkingAfter(i, result.entries)
-                    : undefined
-                }
-              />
-            ) : null
-          )}
-          <tr
-            className="totals"
-            style={{
-              backgroundImage: `linear-gradient(90deg, ${electricBg} 0%, ${electricBg} ${
-                percentageElectric * 100
-              }%, ${petrolBg} ${percentageElectric * 100}%, ${petrolBg} 100%)`,
-            }}
-          >
-            <td>{round(electricDistance + petrolDistance)} km</td>
-            <td>{round(electricDistance)} km</td>
-            <td>{round(petrolDistance)} km</td>
-            <td />
-          </tr>
-        </tbody>
-      </table>
+      <div className="journeys-container">
+        <table className="journeys-list">
+          <thead>
+            <tr>
+              <th>Matka</th>
+              <th>Sähköllä</th>
+              <th>Bensiinillä</th>
+              <th>Tiedot</th>
+            </tr>
+          </thead>
+          <tbody>
+            {result.entries.map((entry, i) =>
+              entry.type === "journey" ? (
+                <Journey
+                  key={i}
+                  chargingConfig={chargingConfig}
+                  onChargingConfigChange={onChargingConfigChange}
+                  journey={entry.journey}
+                  from={
+                    entry.journey.from
+                      ? findParkingBefore(i, result.entries)
+                      : undefined
+                  }
+                  to={
+                    entry.journey.to
+                      ? findParkingAfter(i, result.entries)
+                      : undefined
+                  }
+                />
+              ) : null
+            )}
+            <tr
+              className="totals"
+              style={{
+                backgroundImage: `linear-gradient(90deg, ${electricBg} 0%, ${electricBg} ${
+                  percentageElectric * 100
+                }%, ${petrolBg} ${
+                  percentageElectric * 100
+                }%, ${petrolBg} 100%)`,
+              }}
+            >
+              <td>{round(electricDistance + petrolDistance)} km</td>
+              <td>{round(electricDistance)} km</td>
+              <td>{round(petrolDistance)} km</td>
+              <td />
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
