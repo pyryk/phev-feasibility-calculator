@@ -8,6 +8,7 @@ import {
   VictoryAxis,
   VictoryBar,
   VictoryChart,
+  VictoryContainer,
   VictoryLabel,
   VictoryLegend,
   VictoryStack,
@@ -695,6 +696,13 @@ function Chart({
         theme={VictoryTheme.material}
         height={200}
         padding={{ top: 20, left: 50, bottom: 50, right: 0 }}
+        containerComponent={
+          <VictoryContainer
+            style={{
+              touchAction: "auto",
+            }}
+          />
+        }
       >
         <VictoryAxis
           tickValues={electricData.map((entry) => entry.groupName)}
