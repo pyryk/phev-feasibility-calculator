@@ -22,6 +22,7 @@ import {
   ConsumptionEntry,
   ConsumptionJourney,
   ConsumptionJourneyEntry,
+  DeepPartial,
   Location,
   TimelineObject,
 } from "./types";
@@ -29,12 +30,19 @@ import "./App.css";
 import round from "./round";
 
 const defaultCarConfig: CarConfig = {
+  version: 1,
   petrolPriceEuroPerLiter: 2.5,
   electricityPriceEuroPerKWh: 0.2,
   carElectricBatteryKWh: 11.5,
-  carElectricityConsumptionKWhPer100Km: 18,
+  carElectricityConsumptionKWhPer100kmAt: {
+    "50": 17,
+    "80": 19,
+    "100": 21,
+    "120": 23,
+  },
   carPetrolConsumptionLPer100Km: 6.5,
   carMaxChargingPower: 3.7,
+  distanceInaccuracyCoefficient: 1.05,
 };
 
 const defaultChargingConfig: ChargingConfig = {
@@ -121,9 +129,15 @@ function Configuration({
   onCarConfigChange,
   config,
 }: {
-  onCarConfigChange: (config: Partial<CarConfig>) => void;
+  onCarConfigChange: (config: DeepPartial<CarConfig>) => void;
   config: Config;
 }) {
+  const [advancedConsumption, setAdvancedConsumption] = useState(
+    Object.values(config.carConfig.carElectricityConsumptionKWhPer100kmAt).some(
+      (entry) =>
+        entry !== config.carConfig.carElectricityConsumptionKWhPer100kmAt[50]
+    )
+  );
   return (
     <details className="config">
       <summary>Konfiguraatio</summary>
@@ -136,15 +150,98 @@ function Configuration({
           });
         }}
       />
-      <ControlledNumberInput
-        label="Kulutus kWh/100km"
-        value={config.carConfig.carElectricityConsumptionKWhPer100Km}
-        onChange={(value) => {
-          onCarConfigChange({
-            carElectricityConsumptionKWhPer100Km: value,
-          });
-        }}
-      />
+      <label>
+        Nopeuskohtainen kulutus{" "}
+        <input
+          type="checkbox"
+          checked={
+            config.carConfig.carElectricityConsumptionKWhPer100kmAt !==
+            undefined
+          }
+          onChange={(e) => {
+            const newValue = !advancedConsumption;
+            setAdvancedConsumption(newValue);
+            if (!newValue) {
+              onCarConfigChange({
+                carElectricityConsumptionKWhPer100kmAt: {
+                  "50": config.carConfig
+                    .carElectricityConsumptionKWhPer100kmAt[80],
+                  "80": config.carConfig
+                    .carElectricityConsumptionKWhPer100kmAt[80],
+                  "100":
+                    config.carConfig.carElectricityConsumptionKWhPer100kmAt[80],
+                  "120":
+                    config.carConfig.carElectricityConsumptionKWhPer100kmAt[80],
+                },
+              });
+            }
+          }}
+        />
+      </label>
+      {!advancedConsumption && (
+        <ControlledNumberInput
+          label="Kulutus kWh/100km"
+          value={config.carConfig.carElectricityConsumptionKWhPer100kmAt[80]}
+          onChange={(value) => {
+            onCarConfigChange({
+              carElectricityConsumptionKWhPer100kmAt: {
+                "50": value,
+                "80": value,
+                "100": value,
+                "120": value,
+              },
+            });
+          }}
+        />
+      )}
+      {advancedConsumption && (
+        <>
+          <ControlledNumberInput
+            label="Kulutus kWh/100km @ 50 km/h"
+            value={config.carConfig.carElectricityConsumptionKWhPer100kmAt[50]}
+            onChange={(value) => {
+              onCarConfigChange({
+                carElectricityConsumptionKWhPer100kmAt: {
+                  50: value,
+                },
+              });
+            }}
+          />
+          <ControlledNumberInput
+            label="Kulutus kWh/100km @ 80 km/h"
+            value={config.carConfig.carElectricityConsumptionKWhPer100kmAt[80]}
+            onChange={(value) => {
+              onCarConfigChange({
+                carElectricityConsumptionKWhPer100kmAt: {
+                  80: value,
+                },
+              });
+            }}
+          />
+          <ControlledNumberInput
+            label="Kulutus kWh/100km @ 100 km/h"
+            value={config.carConfig.carElectricityConsumptionKWhPer100kmAt[100]}
+            onChange={(value) => {
+              onCarConfigChange({
+                carElectricityConsumptionKWhPer100kmAt: {
+                  100: value,
+                },
+              });
+            }}
+          />
+          <ControlledNumberInput
+            label="Kulutus kWh/100km @ 120 km/h"
+            value={config.carConfig.carElectricityConsumptionKWhPer100kmAt[120]}
+            onChange={(value) => {
+              onCarConfigChange({
+                carElectricityConsumptionKWhPer100kmAt: {
+                  120: value,
+                },
+              });
+            }}
+          />
+        </>
+      )}
       <ControlledNumberInput
         label="Kulutus l/100km"
         value={config.carConfig.carPetrolConsumptionLPer100Km}
@@ -185,15 +282,39 @@ function Configuration({
           });
         }}
       />
-      <p>
-        Auton kantama sähköajossa yllä olevilla asetuksilla{" "}
-        {round(
-          (config.carConfig.carElectricBatteryKWh /
-            config.carConfig.carElectricityConsumptionKWhPer100Km) *
-            100
-        )}{" "}
-        km
-      </p>
+      <ControlledNumberInput
+        label="Lähtödatan matkojen pituuden korjauskerroin"
+        value={config.carConfig.distanceInaccuracyCoefficient}
+        step={0.01}
+        onChange={(value) => {
+          onCarConfigChange({
+            distanceInaccuracyCoefficient: value,
+          });
+        }}
+      />
+      {advancedConsumption ? (
+        <p>
+          Auton kantama sähköajossa yllä olevilla asetuksilla{" "}
+          {Object.values(
+            config.carConfig.carElectricityConsumptionKWhPer100kmAt
+          )
+            .map((value) =>
+              round((config.carConfig.carElectricBatteryKWh / value) * 100)
+            )
+            .join(" / ")}{" "}
+          km
+        </p>
+      ) : (
+        <p>
+          Auton kantama sähköajossa yllä olevilla asetuksilla{" "}
+          {round(
+            (config.carConfig.carElectricBatteryKWh /
+              config.carConfig.carElectricityConsumptionKWhPer100kmAt[80]) *
+              100
+          )}{" "}
+          km
+        </p>
+      )}
     </details>
   );
 }
@@ -728,6 +849,17 @@ function ConsumptionResults({
               {round(petrolConsumption)} l)
             </td>
           </tr>
+          <tr>
+            <th>Yhteensä</th>
+            <td>{round(petrolDistance + electricDistance)} km</td>
+            <td>
+              {round(
+                petrolConsumption * carConfig.petrolPriceEuroPerLiter +
+                  electricConsumption * carConfig.electricityPriceEuroPerKWh
+              )}{" "}
+              €
+            </td>
+          </tr>
         </tbody>
       </table>
       <h2>Graafit</h2>
@@ -810,7 +942,9 @@ function App() {
     undefined
   );
   const [config, setConfig] = useState<Config>(
-    localStorageExistingValue
+    localStorageExistingValue &&
+      JSON.parse(localStorageExistingValue).carConfig?.version ===
+        defaultCarConfig.version
       ? JSON.parse(localStorageExistingValue)
       : {
           carConfig: defaultCarConfig,
@@ -839,7 +973,14 @@ function App() {
           onCarConfigChange={(config) =>
             setConfig((current) => ({
               ...current,
-              carConfig: { ...current.carConfig, ...config },
+              carConfig: {
+                ...current.carConfig,
+                ...config,
+                carElectricityConsumptionKWhPer100kmAt: {
+                  ...current.carConfig.carElectricityConsumptionKWhPer100kmAt,
+                  ...config.carElectricityConsumptionKWhPer100kmAt,
+                },
+              },
             }))
           }
         />

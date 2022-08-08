@@ -140,13 +140,28 @@ export type CarPowerSourceResult = {
   journeys: ConsumptionJourney[];
 };
 
+export type CarConsumptionMap = {
+  50: number;
+  80: number;
+  100: number;
+  120: number;
+};
+
 export type CarConfig = {
+  version: number;
   petrolPriceEuroPerLiter: number;
   electricityPriceEuroPerKWh: number;
   carElectricBatteryKWh: number;
-  carElectricityConsumptionKWhPer100Km: number;
   carPetrolConsumptionLPer100Km: number;
   carMaxChargingPower: number;
+  distanceInaccuracyCoefficient: number;
+  carElectricityConsumptionKWhPer100kmAt: CarConsumptionMap;
 };
 
 export type ChargingConfig = { [locationName: string]: number };
+
+export type DeepPartial<T> = T extends object
+  ? {
+      [P in keyof T]?: DeepPartial<T[P]>;
+    }
+  : T;
