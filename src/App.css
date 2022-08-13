@@ -153,12 +153,40 @@ h3 {
 
 .config label {
   display: flex;
-  align-items: stretch;
-  margin-bottom: 1rem;
+  align-items: center;
+  margin: 0 auto 0 auto;
+  font-size: 1rem;
+  justify-content: space-between;
+  max-width: 470px;
+  text-align: left;
+  padding: 0.5rem;
+}
+
+.config label:nth-child(odd) {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .config label input {
   margin-left: 1ex;
+  max-width: 100px;
+}
+
+.config p {
+  font-size: 1rem;
+}
+
+.config h3 {
+  margin: 1rem 0 0.5rem 0;
+  font-size: 1.5rem;
+}
+
+@media screen and (max-width: 600px) {
+  .config label {
+    margin: 0 20px 1rem 20px;
+  }
+  .config label input {
+    padding: 0.5rem;
+  }
 }
 
 .popover-button {

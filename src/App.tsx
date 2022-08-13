@@ -1,4 +1,4 @@
-import { debounce, groupBy, sortBy } from "lodash";
+import { capitalize, debounce, groupBy, range, sortBy } from "lodash";
 import React, { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import ButtonPopover from "./ButtonPopover";
@@ -25,13 +25,15 @@ import {
   ConsumptionJourneyEntry,
   DeepPartial,
   Location,
+  Month,
+  TemperatureConfig,
   TimelineObject,
 } from "./types";
 import "./App.css";
 import round from "./round";
 
 const defaultCarConfig: CarConfig = {
-  version: 1,
+  version: 2,
   petrolPriceEuroPerLiter: 2.5,
   electricityPriceEuroPerKWh: 0.2,
   carElectricBatteryKWh: 11.5,
@@ -76,6 +78,22 @@ const defaultChargingConfig: ChargingConfig = {
   "Ravintola Siilinpesä": 22, // Siilitien Metroasema - Liityntäpysäköinti
   "Prisma Kirkkonummi": 100,
   "Verkkokauppa.com": 22,
+};
+
+// in Helsinki-Vantaa, based on https://www.ilmatieteenlaitos.fi/kuukausitilastot
+const defaultTemperatureConfig: TemperatureConfig = {
+  0: -4.3,
+  1: -4.9,
+  2: -1.4,
+  3: 4.5,
+  4: 10.9,
+  5: 15.3,
+  6: 18.3,
+  7: 16.6,
+  8: 11.6,
+  9: 5.8,
+  10: 1.4,
+  11: -1.9,
 };
 
 function ControlledNumberInput({
@@ -125,12 +143,18 @@ function ControlledNumberInput({
   );
 }
 
-type Config = { carConfig: CarConfig; chargingConfig: ChargingConfig };
+type Config = {
+  carConfig: CarConfig;
+  chargingConfig: ChargingConfig;
+  temperatureConfig: TemperatureConfig;
+};
 function Configuration({
   onCarConfigChange,
+  onTemperatureConfigChange,
   config,
 }: {
   onCarConfigChange: (config: DeepPartial<CarConfig>) => void;
+  onTemperatureConfigChange: (config: Partial<TemperatureConfig>) => void;
   config: Config;
 }) {
   const [advancedConsumption, setAdvancedConsumption] = useState(
@@ -295,7 +319,8 @@ function Configuration({
       />
       {advancedConsumption ? (
         <p>
-          Auton kantama sähköajossa yllä olevilla asetuksilla{" "}
+          Auton kantama sähköajossa ideaalilämpötilassa (23°C) yllä olevilla
+          asetuksilla{" "}
           {Object.values(
             config.carConfig.carElectricityConsumptionKWhPer100kmAt
           )
@@ -307,7 +332,8 @@ function Configuration({
         </p>
       ) : (
         <p>
-          Auton kantama sähköajossa yllä olevilla asetuksilla{" "}
+          Auton kantama sähköajossa ideaalilämpötilassa (23°C) yllä olevilla
+          asetuksilla{" "}
           {round(
             (config.carConfig.carElectricBatteryKWh /
               config.carConfig.carElectricityConsumptionKWhPer100kmAt[80]) *
@@ -316,6 +342,19 @@ function Configuration({
           km
         </p>
       )}
+      <h3>Kuukausien keskilämpötilat</h3>
+      {(range(0, 12) as Month[]).map((month) => (
+        <ControlledNumberInput
+          label={`${capitalize(fi.localize?.month(month))}`}
+          value={config.temperatureConfig[month]}
+          step={0.1}
+          onChange={(value) => {
+            onTemperatureConfigChange({
+              [month]: value,
+            });
+          }}
+        />
+      ))}
     </details>
   );
 }
@@ -797,8 +836,13 @@ function ConsumptionResults({
   config: Config;
   onChargingConfigChange: (location: string, value: number) => void;
 }) {
-  const { carConfig, chargingConfig } = config;
-  const result = calculatePowerSourceResult(input, carConfig, chargingConfig);
+  const { carConfig, chargingConfig, temperatureConfig } = config;
+  const result = calculatePowerSourceResult(
+    input,
+    carConfig,
+    chargingConfig,
+    temperatureConfig
+  );
   console.log(result);
   const journeys = result.entries
     .filter(isJourney)
@@ -957,6 +1001,7 @@ function App() {
       : {
           carConfig: defaultCarConfig,
           chargingConfig: defaultChargingConfig,
+          temperatureConfig: defaultTemperatureConfig,
         }
   );
 
@@ -988,6 +1033,15 @@ function App() {
                   ...current.carConfig.carElectricityConsumptionKWhPer100kmAt,
                   ...config.carElectricityConsumptionKWhPer100kmAt,
                 },
+              },
+            }))
+          }
+          onTemperatureConfigChange={(config) =>
+            setConfig((current) => ({
+              ...current,
+              temperatureConfig: {
+                ...current.temperatureConfig,
+                ...config,
               },
             }))
           }
