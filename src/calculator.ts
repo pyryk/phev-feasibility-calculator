@@ -221,11 +221,6 @@ function getTemperatureAdjustedConsumption(
     temperatureEfficiencyPercentages as Record<string, number>
   )[estimatedTemperature.toFixed(0)];
   if (estimatedEfficiency !== undefined) {
-    console.log(
-      `Temperature adjusted efficiency ${
-        estimatedEfficiency / 113
-      } for temperature ${estimatedTemperature} (timestamp ${startTimestamp.toISOString()}, month ${month}, hour ${hour})`
-    );
     return baseConsumption / (estimatedEfficiency / 113);
   }
 
