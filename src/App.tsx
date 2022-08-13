@@ -69,6 +69,7 @@ const defaultChargingConfig: ChargingConfig = {
   "Hotel Haikko Manor": 22,
   "Hotel Amandis": 22, // Alikatu 1-7 P-alue,
   "Porvoon Paahtimo Bar & Café": 22, // Porvoon Kaupungintalo, Porvoon tori, Rihkamatori, Porvoo Lippakioski
+  "Old Town Of Porvoo": 22, // Porvoon Kaupungintalo, Porvoon tori, Rihkamatori, Porvoo Lippakioski
   "ABC Renkomäki Lahtis": 150,
   "Kärkkäinen Lahtis": 60,
   "Teboil Huttula": 22,
@@ -78,6 +79,11 @@ const defaultChargingConfig: ChargingConfig = {
   "Ravintola Siilinpesä": 22, // Siilitien Metroasema - Liityntäpysäköinti
   "Prisma Kirkkonummi": 100,
   "Verkkokauppa.com": 22,
+  "Kauppakeskus Jumbo": 22,
+  "Prisma Viikki": 80,
+  "K-Supermarket Lähderanta": 50,
+  Itis: 22,
+  "Kauppakeskus Merituuli": 50,
 };
 
 // in Helsinki-Vantaa, based on https://www.ilmatieteenlaitos.fi/kuukausitilastot
