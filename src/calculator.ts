@@ -13,6 +13,7 @@ import {
   Month,
   Parking,
   TemperatureConfig,
+  TimelineActivityObject,
   TimelineObject,
 } from "./types";
 
@@ -110,6 +111,20 @@ function isDefined<X>(x: X | null): x is X {
   return !!x;
 }
 
+function getJourneyDistanceMeters(entry: TimelineActivityObject) {
+  // waypointPath distance seems to be the most accurate -- use it if it exists
+  if (entry.activitySegment.waypointPath) {
+    return entry.activitySegment.waypointPath.distanceMeters;
+  }
+  // sometimes waypointPath does not exists -- try to use simplifiedRawPath in those cases
+  if (entry.activitySegment.simplifiedRawPath) {
+    return entry.activitySegment.simplifiedRawPath.distanceMeters;
+  }
+
+  // this seems to be less accurate but it is the only distance that exists for older journeys
+  return entry.activitySegment.distance;
+}
+
 function getJourneys(input: TimelineObject[]): Journey[] {
   return input
     .map((entry, i) => {
@@ -123,11 +138,7 @@ function getJourneys(input: TimelineObject[]): Journey[] {
           const toLocation = findPrevious(input, i);
 
           return {
-            // waypointPath.distanceMeters is more accurate but it does not exists for every journey
-            distanceKm:
-              (entry.activitySegment.waypointPath
-                ? entry.activitySegment.waypointPath.distanceMeters
-                : entry.activitySegment.distance) / 1000,
+            distanceKm: getJourneyDistanceMeters(entry) / 1000,
             startTimestamp: new Date(
               entry.activitySegment.duration.startTimestamp
             ),
@@ -265,7 +276,9 @@ function getConsumptionJourney(
     journey.startTimestamp,
     temperatureConfig
   );
-  const batteryUsage = (adjustedDistance / 100) * adjustedConsumption;
+  const batteryUsage = isNaN(adjustedDistance)
+    ? 0
+    : (adjustedDistance / 100) * adjustedConsumption;
   if (batteryUsage > batteryLeft) {
     // ran out of battery, thus actual electric consumption is only the batteryLeft value
     // console.log(`Ran out of battery (demand ${batteryUsage} kWh)`);

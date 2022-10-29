@@ -25,7 +25,7 @@ export type TimelineActivityObject = {
       activityType: string;
       probability: number;
     }>;
-    waypointPath: {
+    waypointPath?: {
       waypoints: Array<{
         latE7: number;
         lngE7: number;
@@ -34,6 +34,16 @@ export type TimelineActivityObject = {
       distanceMeters: number;
       travelMode: string;
       confidence: number;
+    };
+    simplifiedRawPath?: {
+      distanceMeters: number;
+      points: Array<{
+        accuracyMeters: number;
+        latE7: number;
+        lngE7: number;
+        timestamp: string;
+      }>;
+      source: string;
     };
   };
   placeVisit: undefined;
