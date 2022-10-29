@@ -56,18 +56,23 @@ const defaultChargingConfig: ChargingConfig = {
   "Nauvon vierassatama": 22,
   "Pizzeria Najaden": 22,
   "K-Supermarket Mankkaa": 50,
+  "K-supermarket Mankkaa": 50,
   "Shopping Center Grani": 50,
+  "Köpcentrum Grani": 50,
+  "Kauniaisten Apteekki - Grankulla Apotek": 50, // Shopping Center Grani
   "Lidl Laajalahti Bredis": 22,
   "K-Citymarket Nummela": 50,
   "K-Citymarket Vichtis Nummela": 50,
   "K-Supermarket Jakobacka": 11,
   "Kauppakeskus Kaari": 20,
+  Kaari: 20,
   "K-Citymarket Rauma": 50,
   "Maritime Centre Vellamo": 22,
   "Haminan Sotilaskotiyhdistys Ry": 22, // S-market Hamina, Haminan kauppatori etc.
   "Restaurant mon ami": 22, // S-market Hamina, Haminan kauppatori etc.
   "Hotel Haikko Manor": 22,
   "Hotel Amandis": 22, // Alikatu 1-7 P-alue,
+  "Naantali Guest Harbour": 22, // Alikatu 1-7 P-alue,
   "Porvoon Paahtimo Bar & Café": 22, // Porvoon Kaupungintalo, Porvoon tori, Rihkamatori, Porvoo Lippakioski
   "Old Town Of Porvoo": 22, // Porvoon Kaupungintalo, Porvoon tori, Rihkamatori, Porvoo Lippakioski
   "ABC Renkomäki Lahtis": 150,
@@ -84,6 +89,16 @@ const defaultChargingConfig: ChargingConfig = {
   "K-Supermarket Lähderanta": 50,
   Itis: 22,
   "Kauppakeskus Merituuli": 50,
+  "Fazer Experience Visitor Centre": 22,
+  "Jorvin sairaala": 22,
+  "XXL Sports & Outdoor Suomenoja": 22, // Suomalaistentie 7
+  "K-Supermarket Malminmäki": 50,
+  "Haltia - The Finnish Nature Centre": 22,
+  "Lidl Mikkelä": 20,
+  "K-Citymarket Palokka Jyväskylä": 200,
+  "ABC Tammisilta Paimio": 50,
+  "ABC Nihtisilta Espoo automaattiasema": 50,
+  "Etola Tapiola": 22, // Ainoa
 };
 
 // in Helsinki-Vantaa, based on https://www.ilmatieteenlaitos.fi/kuukausitilastot
