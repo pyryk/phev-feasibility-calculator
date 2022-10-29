@@ -579,6 +579,9 @@ function JourneyLocationInfo({
   );
 }
 
+const errorGradient =
+  "linear-gradient(137deg, rgba(209,209,209,1) 0%, rgba(209,209,209,1) 40%, rgba(255,225,205,1) 40%, rgba(255,225,205,1) 100%)";
+
 function Journey({
   journey,
   from,
@@ -593,12 +596,15 @@ function Journey({
   onChargingConfigChange: (location: string, value: number) => void;
 }) {
   const percentageElectric = journey.electricDistance / journey.distanceKm;
+  const isError = isNaN(journey.distanceKm);
   return (
     <tr
       style={{
-        backgroundImage: `linear-gradient(90deg, ${electricBg} 0%, ${electricBg} ${
-          percentageElectric * 100
-        }%, ${petrolBg} ${percentageElectric * 100}%, ${petrolBg} 100%)`,
+        backgroundImage: isError
+          ? errorGradient
+          : `linear-gradient(90deg, ${electricBg} 0%, ${electricBg} ${
+              percentageElectric * 100
+            }%, ${petrolBg} ${percentageElectric * 100}%, ${petrolBg} 100%)`,
       }}
     >
       <td>{round(journey.distanceKm)} km</td>
