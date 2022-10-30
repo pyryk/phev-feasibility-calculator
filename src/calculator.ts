@@ -111,13 +111,13 @@ function isDefined<X>(x: X | null): x is X {
   return !!x;
 }
 
-function getJourneyDistanceMeters(entry: TimelineActivityObject) {
+function getJourneyDistanceMeters(entry: TimelineActivityObject): number {
   // waypointPath distance seems to be the most accurate -- use it if it exists
-  if (entry.activitySegment.waypointPath) {
+  if (entry.activitySegment.waypointPath?.distanceMeters) {
     return entry.activitySegment.waypointPath.distanceMeters;
   }
   // sometimes waypointPath does not exists -- try to use simplifiedRawPath in those cases
-  if (entry.activitySegment.simplifiedRawPath) {
+  if (entry.activitySegment.simplifiedRawPath?.distanceMeters) {
     return entry.activitySegment.simplifiedRawPath.distanceMeters;
   }
 

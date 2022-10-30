@@ -31,12 +31,12 @@ export type TimelineActivityObject = {
         lngE7: number;
       }>;
       source: string;
-      distanceMeters: number;
+      distanceMeters?: number;
       travelMode: string;
       confidence: number;
     };
     simplifiedRawPath?: {
-      distanceMeters: number;
+      distanceMeters?: number;
       points: Array<{
         accuracyMeters: number;
         latE7: number;
