@@ -116,8 +116,8 @@ export type JourneyEntry =
 export type ConsumptionJourney = Journey & {
   electricDistance: number;
   electricConsumption: number;
-  petrolDistance: number;
-  petrolConsumption: number;
+  otherFuelDistance: number;
+  otherFuelConsumption: number;
   batteryLeftKWhAfter: number;
 };
 
@@ -159,6 +159,7 @@ export type CarConsumptionMap = {
 
 export type CarConfig = {
   version: number;
+  isBEV: boolean;
   petrolPriceEuroPerLiter: number;
   electricityPriceEuroPerKWh: number;
   carElectricBatteryKWh: number;

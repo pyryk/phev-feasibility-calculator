@@ -34,6 +34,7 @@ import round from "./round";
 
 const defaultCarConfig: CarConfig = {
   version: 2,
+  isBEV: false,
   petrolPriceEuroPerLiter: 2.5,
   electricityPriceEuroPerKWh: 0.2,
   carElectricBatteryKWh: 11.5,
@@ -98,7 +99,10 @@ const defaultChargingConfig: ChargingConfig = {
   "K-Citymarket Palokka Jyväskylä": 200,
   "ABC Tammisilta Paimio": 50,
   "ABC Nihtisilta Espoo automaattiasema": 50,
+  "ABC Nihtisilta Espoo": 50,
   "Etola Tapiola": 22, // Ainoa
+  "Korkeasaari Zoo": 22, // Mustikkamaan liikuntapuisto
+  "ABC Masuuni Karkkila": 50,
 };
 
 // in Helsinki-Vantaa, based on https://www.ilmatieteenlaitos.fi/kuukausitilastot
@@ -188,7 +192,7 @@ function Configuration({
     <details className="config">
       <summary>Konfiguraatio</summary>
       <ControlledNumberInput
-        label="Auton akun koko kWh"
+        label="Auton akun tehollinen koko kWh"
         value={config.carConfig.carElectricBatteryKWh}
         onChange={(value) => {
           onCarConfigChange({
@@ -196,6 +200,16 @@ function Configuration({
           });
         }}
       />
+      <label>
+        Täyssähköauto{" "}
+        <input
+          type="checkbox"
+          checked={config.carConfig.isBEV}
+          onChange={(e) => {
+            onCarConfigChange({ isBEV: e.target.checked });
+          }}
+        />
+      </label>
       <label>
         Nopeuskohtainen kulutus{" "}
         <input
@@ -366,6 +380,7 @@ function Configuration({
       <h3>Kuukausien keskilämpötilat</h3>
       {(range(0, 12) as Month[]).map((month) => (
         <ControlledNumberInput
+          key={month}
           label={`${capitalize(fi.localize?.month(month))}`}
           value={config.temperatureConfig[month]}
           step={0.1}
@@ -601,12 +616,14 @@ function Journey({
   journey,
   from,
   to,
+  carConfig,
   chargingConfig,
   onChargingConfigChange,
 }: {
   journey: ConsumptionJourney;
   from: ChargingEntry | undefined;
   to: ChargingEntry | undefined;
+  carConfig: CarConfig;
   chargingConfig: ChargingConfig;
   onChargingConfigChange: (location: string, value: number) => void;
 }) {
@@ -626,8 +643,12 @@ function Journey({
       <td title={`${round(journey.electricConsumption)} kWh`}>
         {round(journey.electricDistance)} km
       </td>
-      <td title={`${round(journey.petrolConsumption)} l`}>
-        {round(journey.petrolDistance)} km
+      <td
+        title={`${round(journey.otherFuelConsumption)} ${
+          carConfig.isBEV ? "kWh" : "l"
+        }`}
+      >
+        {round(journey.otherFuelDistance)} km
       </td>
       <td className="secondary">
         <p>
@@ -655,7 +676,13 @@ function Journey({
   );
 }
 
-function JourneyLengthChart({ journeys }: { journeys: ConsumptionJourney[] }) {
+function JourneyLengthChart({
+  journeys,
+  carConfig,
+}: {
+  journeys: ConsumptionJourney[];
+  carConfig: CarConfig;
+}) {
   const monthlyData = sortBy(
     Object.entries(
       groupBy(
@@ -671,7 +698,7 @@ function JourneyLengthChart({ journeys }: { journeys: ConsumptionJourney[] }) {
   }));
   const monthlyPetrolData = monthlyData.map(([groupName, group]) => ({
     groupName,
-    distance: group.reduce((prev, curr) => prev + curr.petrolDistance, 0),
+    distance: group.reduce((prev, curr) => prev + curr.otherFuelDistance, 0),
   }));
 
   return (
@@ -679,11 +706,18 @@ function JourneyLengthChart({ journeys }: { journeys: ConsumptionJourney[] }) {
       title="Matkan pituuden mukaan"
       electricData={monthlyElectricData}
       petrolData={monthlyPetrolData}
+      carConfig={carConfig}
     />
   );
 }
 
-function YearMonthlyChart({ journeys }: { journeys: ConsumptionJourney[] }) {
+function YearMonthlyChart({
+  journeys,
+  carConfig,
+}: {
+  journeys: ConsumptionJourney[];
+  carConfig: CarConfig;
+}) {
   const monthlyData = sortBy(
     Object.entries(
       groupBy(journeys, (entry) =>
@@ -698,7 +732,7 @@ function YearMonthlyChart({ journeys }: { journeys: ConsumptionJourney[] }) {
   }));
   const monthlyPetrolData = monthlyData.map(([groupName, group]) => ({
     groupName,
-    distance: group.reduce((prev, curr) => prev + curr.petrolDistance, 0),
+    distance: group.reduce((prev, curr) => prev + curr.otherFuelDistance, 0),
   }));
 
   return (
@@ -706,11 +740,18 @@ function YearMonthlyChart({ journeys }: { journeys: ConsumptionJourney[] }) {
       title="Vuosi-kuukausittain"
       electricData={monthlyElectricData}
       petrolData={monthlyPetrolData}
+      carConfig={carConfig}
     />
   );
 }
 
-function MonthlyChart({ journeys }: { journeys: ConsumptionJourney[] }) {
+function MonthlyChart({
+  journeys,
+  carConfig,
+}: {
+  journeys: ConsumptionJourney[];
+  carConfig: CarConfig;
+}) {
   const monthlyData = sortBy(
     Object.entries(
       groupBy(journeys, (entry) =>
@@ -725,7 +766,7 @@ function MonthlyChart({ journeys }: { journeys: ConsumptionJourney[] }) {
   }));
   const monthlyPetrolData = monthlyData.map(([groupName, group]) => ({
     groupName,
-    distance: group.reduce((prev, curr) => prev + curr.petrolDistance, 0),
+    distance: group.reduce((prev, curr) => prev + curr.otherFuelDistance, 0),
   }));
 
   return (
@@ -733,6 +774,7 @@ function MonthlyChart({ journeys }: { journeys: ConsumptionJourney[] }) {
       title="Kuukausittain"
       electricData={monthlyElectricData}
       petrolData={monthlyPetrolData}
+      carConfig={carConfig}
     />
   );
 }
@@ -741,10 +783,12 @@ function Chart({
   electricData,
   petrolData,
   title,
+  carConfig,
 }: {
   electricData: Array<{ groupName: string; distance: number }>;
   petrolData: Array<{ groupName: string; distance: number }>;
   title: string;
+  carConfig: CarConfig;
 }) {
   const electricDataWithLabels = electricData.map((entry) => ({
     ...entry,
@@ -801,8 +845,14 @@ function Chart({
             labels: { fontSize: 6, fill: "rgb(118, 155, 172)" },
           }}
           data={[
-            { name: "Sähkö", symbol: { fill: "rgb(101 176 101)" } },
-            { name: "Bensiini", symbol: { fill: "rgb(177 89 89)" } },
+            {
+              name: carConfig.isBEV ? "Lataamatta" : "Sähkö",
+              symbol: { fill: "rgb(101 176 101)" },
+            },
+            {
+              name: carConfig.isBEV ? "Ladattava" : "Bensiini",
+              symbol: { fill: "rgb(177 89 89)" },
+            },
           ]}
         />
         <VictoryStack>
@@ -883,11 +933,11 @@ function ConsumptionResults({
     0
   );
   const petrolDistance = journeys.reduce(
-    (prev, curr) => prev + curr.petrolDistance,
+    (prev, curr) => prev + curr.otherFuelDistance,
     0
   );
   const petrolConsumption = journeys.reduce(
-    (prev, curr) => prev + curr.petrolConsumption,
+    (prev, curr) => prev + curr.otherFuelConsumption,
     0
   );
   const percentageElectric =
@@ -905,7 +955,7 @@ function ConsumptionResults({
         </thead>
         <tbody>
           <tr>
-            <th>Sähkö</th>
+            <th>{carConfig.isBEV ? "Lataamatta" : "Sähkö"}</th>
             <td>
               {round(electricDistance)} km ({round(percentageElectric * 100, 1)}{" "}
               %)
@@ -918,15 +968,24 @@ function ConsumptionResults({
             </td>
           </tr>
           <tr>
-            <th>Bensiini</th>
+            <th>{carConfig.isBEV ? "Ladattava" : "Bensiini"}</th>
             <td>
               {round(petrolDistance)} km (
               {round((1 - percentageElectric) * 100, 1)} %)
             </td>
-            <td>
-              {round(petrolConsumption * carConfig.petrolPriceEuroPerLiter)} € (
-              {round(petrolConsumption)} l)
-            </td>
+            {carConfig.isBEV ? (
+              <td>
+                {round(
+                  petrolConsumption * carConfig.electricityPriceEuroPerKWh
+                )}{" "}
+                € ({round(petrolConsumption)} kWh)
+              </td>
+            ) : (
+              <td>
+                {round(petrolConsumption * carConfig.petrolPriceEuroPerLiter)} €
+                ({round(petrolConsumption)} l)
+              </td>
+            )}
           </tr>
           <tr>
             <th>Yhteensä</th>
@@ -943,9 +1002,9 @@ function ConsumptionResults({
       </table>
       <h2>Graafit</h2>
       <div className="charts">
-        <YearMonthlyChart journeys={journeys} />
-        <MonthlyChart journeys={journeys} />
-        <JourneyLengthChart journeys={journeys} />
+        <YearMonthlyChart journeys={journeys} carConfig={carConfig} />
+        <MonthlyChart journeys={journeys} carConfig={carConfig} />
+        <JourneyLengthChart journeys={journeys} carConfig={carConfig} />
       </div>
       <h2>Matkat</h2>
       <div className="journeys-container">
@@ -953,8 +1012,8 @@ function ConsumptionResults({
           <thead>
             <tr>
               <th>Matka</th>
-              <th>Sähköllä</th>
-              <th>Bensiinillä</th>
+              <th>{carConfig.isBEV ? "Lataamatta" : "Sähköllä"}</th>
+              <th>{carConfig.isBEV ? "Ladattavaa" : "Bensiinillä"}</th>
               <th>Tiedot</th>
             </tr>
           </thead>
@@ -966,6 +1025,7 @@ function ConsumptionResults({
                   chargingConfig={chargingConfig}
                   onChargingConfigChange={onChargingConfigChange}
                   journey={entry.journey}
+                  carConfig={carConfig}
                   from={
                     entry.journey.from
                       ? findParkingBefore(i, result.entries)
@@ -1013,6 +1073,34 @@ function sortEntries(entries: TimelineObject[]) {
 const localStorageKey = "phev-power-source-usage-analyzer-config";
 const localStorageExistingValue = localStorage.getItem(localStorageKey);
 
+function initConfiguration(): Config {
+  const defaultConfig = {
+    carConfig: defaultCarConfig,
+    chargingConfig: defaultChargingConfig,
+    temperatureConfig: defaultTemperatureConfig,
+  };
+  if (!localStorageExistingValue) {
+    return defaultConfig;
+  }
+
+  try {
+    const parsedlocalStorageValue = JSON.parse(localStorageExistingValue);
+
+    return parsedlocalStorageValue.carConfig?.version ===
+      defaultCarConfig.version
+      ? {
+          ...parsedlocalStorageValue,
+          carConfig: {
+            ...parsedlocalStorageValue.carConfig,
+            isBEV: parsedlocalStorageValue.carConfig.isBEV ?? false,
+          },
+        }
+      : defaultConfig;
+  } catch (e) {
+    return defaultConfig;
+  }
+}
+
 function App() {
   const [inputFile, setInputFile] = useState<TimelineObject[] | undefined>(
     undefined
@@ -1020,17 +1108,7 @@ function App() {
   const [inputFileName, setInputFileName] = useState<string | undefined>(
     undefined
   );
-  const [config, setConfig] = useState<Config>(
-    localStorageExistingValue &&
-      JSON.parse(localStorageExistingValue).carConfig?.version ===
-        defaultCarConfig.version
-      ? JSON.parse(localStorageExistingValue)
-      : {
-          carConfig: defaultCarConfig,
-          chargingConfig: defaultChargingConfig,
-          temperatureConfig: defaultTemperatureConfig,
-        }
-  );
+  const [config, setConfig] = useState<Config>(initConfiguration());
 
   useEffect(
     () => localStorage.setItem(localStorageKey, JSON.stringify(config)),
@@ -1040,7 +1118,12 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Plugin-hybridin käyttövoima-arvio</h1>
+        <h1>Ladattavan auton käyttövoima-arvio</h1>
+        <p className="intro-text">
+          Antaa Google Location History -datan perusteella arvion siitä, kuinka
+          paljon sähköautoa joutuisi lataamaan matkan varrella, ja siitä, kuinka
+          suuren osan matkoistaan pääsisi PHEV-autolla sähköllä.
+        </p>
         {inputFileName && <p className="filenames">{inputFileName}</p>}
         <MyDropzone
           onDrop={(fileName, fileContents) => {

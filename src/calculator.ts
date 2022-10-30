@@ -285,16 +285,25 @@ function getConsumptionJourney(
     const electricKms = (batteryLeft / adjustedConsumption) * 100;
     const electricConsumption = batteryLeft;
     batteryLeft = 0;
-    const petrolKms = adjustedDistance - electricKms;
-    const petrolConsumption =
-      (petrolKms / 100) * config.carPetrolConsumptionLPer100Km;
+    const otherFuelKms = adjustedDistance - electricKms;
+    const otherFuelConsumption = config.isBEV
+      ? (otherFuelKms / 100) *
+        getTemperatureAdjustedConsumption(
+          getSpeedAdjustedConsumption(
+            journeyAverageSpeedKmh,
+            config.carElectricityConsumptionKWhPer100kmAt
+          ),
+          journey.startTimestamp,
+          temperatureConfig
+        )
+      : (otherFuelKms / 100) * config.carPetrolConsumptionLPer100Km;
     return {
       ...journey,
       distanceKm: adjustedDistance,
       electricConsumption,
-      petrolConsumption,
+      otherFuelConsumption: otherFuelConsumption,
       electricDistance: electricKms,
-      petrolDistance: petrolKms,
+      otherFuelDistance: otherFuelKms,
       batteryLeftKWhAfter: 0,
     };
   } else {
@@ -308,9 +317,9 @@ function getConsumptionJourney(
       ...journey,
       distanceKm: adjustedDistance,
       electricConsumption,
-      petrolConsumption: 0,
+      otherFuelConsumption: 0,
       electricDistance: electricKms,
-      petrolDistance: 0,
+      otherFuelDistance: 0,
       batteryLeftKWhAfter: batteryLeft,
     };
   }

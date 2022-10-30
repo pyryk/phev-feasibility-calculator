@@ -32,6 +32,17 @@
   color: #61dafb;
 }
 
+h1 {
+  margin-bottom: 1rem;
+}
+
+.intro-text {
+  margin-top: 0;
+  max-width: 800px;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
